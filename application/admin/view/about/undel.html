@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>文章删除管理</title>
+    <link style="text/css" rel="stylesheet" href="__STATIC__/admin/layui/css/layui.css" />
+    <script style="text/javascript" src="__STATIC__/admin/layui/layui.js"></script>
+    <style media="screen">
+      body{padding: 10px}
+    </style>
+  </head>
+  <body>
+    <table class="layui-table">
+      <thead>
+        <tr>
+          <td>ID</td>
+          <td>文章标题</td>
+          <td>操作</td>
+        </tr>
+      </thead>
+      <tbody>
+        {volist name="list" id="vo"}
+        <tr>
+          <td>{$vo.id}</td>
+          <td>{$vo.title}</td>
+          <td>
+            <button type="button" class="layui-btn layui-btn-xs" name="button" onclick="undelet({$vo.id})">恢复</button>
+            <button type="button" class="layui-btn layui-btn-xs layui-btn-danger" name="button" onclick="delet({$vo.id})">删除</button>
+          </td>
+        </tr>
+        {/volist}
+      </tbody>
+    </table>
+    <div class="layui-form-item">
+      <div class="layui-input-block">
+      <button class="layui-btn" onclick="undelet()">全部恢复</button>
+      <button class="layui-btn layui-btn-danger" onclick="delet()">全部删除</button>
+      </div>
+    </div>
+    <script type="text/javascript">
+      layui.use(['layer','form'],function(){
+        form = layui.form;
+        layer = layui.layer;
+        $ = layui.jquery;
+      });
+      function undelet(id)
+      {
+        layer.confirm('确认要恢复吗？', function(index){
+          $.post('/public/admin/About/undelet?mid='+{$mid}+'&id='+id,function(res){
+            if(res.status == 0)
+            {
+              layer.alert(res.msg,{icon:2});
+              reloadImg();
+            }else{
+              layer.msg(res.msg);
+              setTimeout(function(){parent.window.location.reload();},1000)
+            }
+          },'json')
+          layer.close(index);
+        });
+      }
+      function delet(id)
+      {
+        layer.confirm('确认要彻底删除吗？', function(index){
+          $.post('/public/admin/About/delet?mid='+{$mid}+'&id='+id,function(res){
+            if(res.status == 0)
+            {
+              layer.alert(res.msg,{icon:2});
+              reloadImg();
+            }else{
+              layer.msg(res.msg);
+              setTimeout(function(){window.location.reload();},1000)
+            }
+          },'json')
+          layer.close(index);
+        });
+      }
+
+
+    </script>
+  </body>
+</html>

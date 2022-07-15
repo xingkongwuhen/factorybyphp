@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>主页</title>
+    <link style="text/css" rel="stylesheet" href="__STATIC__/admin/layui/css/layui.css" />
+    <script style="text/javascript" src="__STATIC__/admin/layui/layui.js"></script>
+    <style>
+      .header{width: 100%;height: 50px;line-height: 50px; background-color: #2F4056; color: #fff;}
+      .title{margin-left: 3%; font-size: 30px;}
+      .userinfo{float: right;margin-right: 5%; font-size: 14px;}
+      .userinfo a{color: #fff;}
+      .home {float: right; margin-right: 2%; font-size: 14px;}
+      .home a{color: #fff;}
+      .menu{width: 15%; float: left; background-color: #333744;}
+      .layui-nav-tree{width: 100%}
+      .layui-colla-content{padding: 0px; border-top: none;}
+      .layui-colla-title{background: #42485b; color: #fff;}
+      .layui-colla-item{border-top: none;}
+      .layui-collapse{border:none;}
+      .main{width: 85%; float: left;}
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <span class="title">{$web_name.web_value}--后台管理系统</span>
+      <span class="userinfo">{$user.name}[{$roes.typename}]<span>&nbsp;&nbsp;&nbsp;<a href="javascript:;" onclick="logout()" >退出</a></span></span>
+      <span class="home"><a href="/public/index.php" target="_blank" >网站首页</a></span>
+    </div>
+    <!-- 左侧菜单栏 -->
+    <div class="menu" id="menu">
+      <div class="layui-collapse" lay-accordion>
+        {volist name="menus" id="vo"}
+        <div class="layui-colla-item">
+          <h2 class="layui-colla-title">{$vo.menuname}</h2>
+          <div class="layui-colla-content">
+        <?php if(isset($vo['children']) && $vo['children']){?>
+              <ul class="layui-nav layui-nav-tree" lay-filter="test">
+                {volist name="vo.children" id="voc"}
+                <li class="layui-nav-item"><a href="javascript:;" onclick="menuFire(this)" src="/public/admin/{$voc.controller}/{$voc.method}?mid={$vo.id}&cid={$voc.id}">{$voc.menuname}</a></li>
+                {/volist}
+                <!-- <li class="layui-nav-item"><a href="javascript:;" onclick="menuFire(this)" src="/public/admin.php/admin/Roes/index">管理员角色</a></li> -->
+              </ul>
+          	<?php }?>
+          </div>
+        </div>
+        {/volist}
+      </div>
+    </div>
+    <!-- 主操做页面 -->
+    <div class="main" id="main">
+      <iframe src="/public/admin/Index/welcome" onload="resetMainHeight(this)" style="width: 100%;height: 100%;" frameborder="0" scrolling="0"></iframe>
+
+    </div>
+
+
+
+
+
+    <script>
+    //注意：折叠面板 依赖 element 模块，否则无法进行功能性操作
+    layui.use('element', function(){
+      var element = layui.element;
+    });
+    layui.use(['layer'],function(){
+      $ = layui.jquery;
+      layer = layui.layer;
+      resetmenuheight();
+    });
+
+    //重新设定页面高度
+    function resetmenuheight(){
+      var height = document.documentElement.clientHeight - 50;
+      $('#menu').height(height);
+    }
+    // 重新设置主操作页面高度
+		function resetMainHeight(obj){
+			var height = parent.document.documentElement.clientHeight - 53;
+			$(obj).parent('div').height(height);
+		}
+    //添加菜单点击事件
+    function menuFire(obj){
+      // alert('13123')
+        var url = $(obj).attr('src');
+        $('iframe').attr('src',url);
+    }
+    function logout(){
+      layer.confirm('确认要退出吗？', function(index){
+        $.post('/public/admin/User/logout',function(res){
+          if(res.status == 0)
+          {
+            layer.alert(res.msg,{icon:2});
+          }else{
+            layer.msg(res.msg);
+            setTimeout(function(){window.location.href="/public/admin/User/login";},1000)
+          }
+        },'json')
+        layer.close(index);
+      });
+
+    }
+    </script>
+
+  </body>
+</html>

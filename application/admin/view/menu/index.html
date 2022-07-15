@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>菜单管理</title>
+    <link style="text/css" rel="stylesheet" href="__STATIC__/admin/layui/css/layui.css" />
+    <script style="text/javascript" src="__STATIC__/admin/layui/layui.js"></script>
+    <style>
+      body{padding: 10px;}
+      .header .layui-btn-sm{margin-left: 2%;}
+      /* .header span{background-color: #009688; color: #fff; margin-left: 2%; padding: 10px;} */
+      .header div{border-bottom: 2px solid #009688; margin-top: 15px;}
+      .layui-btn-primary{float: right;}
+    </style>
+  </head>
+  <body>
+
+    <div class="header">
+      <button type="button" class="layui-btn layui-btn-sm" name="button">菜单列表</button>
+      <!-- <button type="button" class="layui-btn layui-btn-sm" name="button" onclick="add()">添加</button> -->
+      {if condition="$pid>0"}
+      <button type="button" class="layui-btn layui-btn-primary layui-btn-sm" onclick="back({$backid}); return false;" name="button">返回上级</button>
+      {/if}
+      <div></div>
+    </div>
+    <form class="layui-form">
+
+      <table class="layui-table">
+        <thead>
+          <td>ID</td>
+          <td>菜单名称</td>
+          <td>控制器</td>
+          <td>方法</td>
+          <td>排序</td>
+          <td>是否隐藏</td>
+          <td>是否禁用</td>
+          <td>子菜单</td>
+        </thead>
+        <tbody>
+          {volist name="list" id="vo"}
+          <tr>
+            <td>{$vo.id}</td>
+            <td><input type="text" class="layui-input" {$vo.id == 1 ? 'disabled="disabled"':''} name="menunames[{$vo.id}]" value="{$vo.menuname}" /></td>
+            <td><input type="text" class="layui-input" {$vo.id == 1 ? 'disabled="disabled"':''} name="controllers[{$vo.id}]" value="{$vo.controller}" /></td>
+            <td><input type="text" class="layui-input" {$vo.id == 1 ? 'disabled="disabled"':''} name="methods[{$vo.id}]" value="{$vo.method}" /></td>
+            <td><input type="text" class="layui-input" {$vo.id == 1 ? 'disabled="disabled"':''} name="orders[{$vo.id}]" value="{$vo.sort_id}" /></td>
+            <td> <input type="checkbox" lay-skin="primary" title="隐藏" name="ishiddens[{$vo.id}]" {$vo.ishidden == 1 ? "checked" : ''} value="1" ></td>
+            <td><input type="checkbox" lay-skin="primary" title="禁用" name="status[{$vo.id}]" {$vo.status == 1 ? "checked" : ''} value="1" ></td>
+            <td> <button type="button" class="layui-btn layui-btn-xs"  name="button" onclick="child({$vo.id}); return false;" >子菜单</button>  </td>
+          </tr>
+          {/volist}
+          <tr>
+            <td></td>
+            <td><input type="text" class="layui-input" name="menunames[0]" value="" /></td>
+            <td><input type="text" class="layui-input" name="controllers[0]" value="" /></td>
+            <td><input type="text" class="layui-input" name="methods[0]" value="" /></td>
+            <td><input type="text" class="layui-input" name="orders[0]" value="{$orderid}" /></td>
+            <td> <input type="checkbox" lay-skin="primary" title="隐藏" name="ishiddens[0]"  value="1" ></td>
+            <td><input type="checkbox" lay-skin="primary" title="禁用" name="status[0]" value="1" ></td>
+            <td> </td>
+          </tr>
+        </tbody>
+      </table>
+      <input type="hidden" name="pid" value="{$pid}">
+    </form>
+    <button type="button" class="layui-btn" onclick="save()" name="button">保存</button>
+    <script>
+    layui.use(['layer','form'],function(){
+      $ = layui.jquery;
+      layer = layui.layer;
+      form = layui.form;
+    });
+      function child(pid)
+      {
+        window.location.href="/public/admin/Menu/index?pid="+pid;
+      }
+      function back(pid)
+      {
+        window.location.href="/public/admin/Menu/index?pid="+pid;
+      }
+      function save()
+      {
+        $.post('/public/admin/Menu/save',$('form').serialize(),function(res){
+          if(res.status == 0)
+          {
+            layer.alert(res.msg,{icon:2});
+            reloadImg();
+          }else{
+            layer.msg(res.msg);
+            setTimeout(function(){window.location.reload();},1000)
+          }
+        },'json')
+      }
+
+
+    </script>
+
+  </body>
+</html>

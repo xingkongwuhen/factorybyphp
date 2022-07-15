@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>商品列表</title>
+    <link style="text/css" rel="stylesheet" href="__STATIC__/admin/layui/css/layui.css" />
+    <script style="text/javascript" src="__STATIC__/admin/layui/layui.js"></script>
+    <style>
+      body{padding: 10px;}
+      .header .layui-btn-sm{margin-left: 2%;}
+      /* .header span{background-color: #009688; color: #fff; margin-left: 2%; padding: 10px;} */
+      .header .fenge{border-bottom: 2px solid #009688; margin-top: 15px;}
+      .header .seach{float: right; margin-right: 5%}
+      #pages {margin-left: 40%}
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <button type="button" class="layui-btn layui-btn-sm" name="button">商品列表</button>
+      <button type="button" class="layui-btn layui-btn-sm" class="add" name="button" onclick="add({$mid})" data-url="Goods" >添加商品</button>
+      <button type="button" class="layui-btn layui-btn-sm" name="button" onclick="undel({$mid})" data-url="Goods">撤回删除</button>
+    </div>
+  </body>
+  <script type="text/javascript">
+  //引入组建
+    layui.use(['layer','laypage'],function(){
+      $ = layui.jquery;
+      layer = layui.layer;
+      laypage = layui.laypage;
+    });
+    /*添加商品*/
+    function add(mid)
+    {
+      window.location.href = "/public/admin/Goods/add?mid="+mid;
+    }
+    </script>
+</html>

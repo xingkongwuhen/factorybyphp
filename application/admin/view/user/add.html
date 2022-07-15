@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>管理员列表</title>
+    <link style="text/css" rel="stylesheet" href="__STATIC__/admin/layui/css/layui.css" />
+    <script style="text/javascript" src="__STATIC__/admin/layui/layui.js"></script>
+    <style>
+      body{padding: 10px;}
+      .header .layui-btn-sm{margin-left: 2%;}
+      .layui-form {margin: auto; width: 50%;}
+      .layui-from-btn {margin: auto; width: 50%;}
+      /* .header span{background-color: #009688; color: #fff; margin-left: 2%; padding: 10px;} */
+      .header div{border-bottom: 2px solid #009688; margin-top: 15px; margin-bottom: 15px;}
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <button type="button" class="layui-btn layui-btn-sm" name="button" onclick="list()">管理员列表</button>
+      <button type="button" class="layui-btn layui-btn-sm" name="button" >添加管理员</button>
+      <!-- <button type="button" class="layui-btn layui-btn-sm" name="button">撤回删除</button> -->
+      <div></div>
+    </div>
+    <form class="layui-form">
+      <div class="layui-form-item">
+        <label class="layui-form-label">用户名：</label>
+        <div class="layui-input-inline">
+          <input type="text" class="layui-input" name="name" value="">
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">角&nbsp;&nbsp;&nbsp;&nbsp;色：</label>
+        <div class="layui-input-inline">
+          <select class="" name="gid">
+            <option value="0">请选择</option>
+            {volist name="list" id="vo"}
+            <option value="{$vo.id}">{$vo.typename}</option>
+            {/volist}
+          </select>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">密&nbsp;&nbsp;&nbsp;&nbsp;码：</label>
+        <div class="layui-input-inline">
+          <input type="text" class="layui-input" name="password" value="">
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">姓&nbsp;&nbsp;&nbsp;&nbsp;名：</label>
+        <div class="layui-input-inline">
+          <input type="text" class="layui-input" name="truename" value="">
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">状&nbsp;&nbsp;&nbsp;&nbsp;态：</label>
+        <div class="layui-input-inline">
+          <input type="checkbox" lay-skin="primary" title="禁用" name="status" value="1">
+        </div>
+      </div>
+    </form>
+    <div class="layui-form-item layui-from-btn">
+      <div class="layui-input-block">
+      <button class="layui-btn" onclick="save()">提交</button>
+      </div>
+    </div>
+    <script type="text/javascript">
+      layui.use(['layer','form'],function(){
+        form = layui.form;
+        layer = layui.layer;
+        $ = layui.jquery;
+      });
+      function list()
+      {
+        window.location.href="/public/admin/User/index";
+      }
+      function save()
+      {
+        var name = $.trim($('input[name="name"]').val());
+        var password = $.trim($('input[name="password"]').val());
+        var truename = $.trim($('input[name="truename"]').val());
+        var gid = $('select[name="gid"]').val();
+        if(name == ''){
+          layer.alert("请输入用户名",{icom:2});
+          return;
+        }
+        if(password == ''){
+          layer.alert("请输入用户密码",{icom:2});
+          return;
+        }
+        if(gid == 0){
+          layer.alert("请选择角色",{icom:2});
+          return;
+        }
+
+        $.post('/public/admin/User/saveadd',$('form').serialize(),function(res){
+          if(res.status == 0)
+          {
+            layer.alert(res.msg,{icon:2});
+            reloadImg();
+          }else{
+            layer.msg(res.msg);
+            setTimeout(function(){window.location.href="/public/admin/User/index";},1000)
+          }
+        },'json')
+      }
+
+    </script>
+  </body>
+</html>

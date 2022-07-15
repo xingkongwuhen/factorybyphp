@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>幻灯片分类管理</title>
+    <link style="text/css" rel="stylesheet" href="__STATIC__/admin/layui/css/layui.css" />
+    <script style="text/javascript" src="__STATIC__/admin/layui/layui.js"></script>
+    <style>
+      body{padding: 10px;}
+      .header .layui-btn-sm{margin-left: 2%;}
+      /* .header span{background-color: #009688; color: #fff; margin-left: 2%; padding: 10px;} */
+      .header div{border-bottom: 2px solid #009688; margin-top: 15px;}
+      .layui-btn-primary{float: right;}
+    </style>
+  </head>
+  <body>
+
+    <div class="header">
+      <button type="button" class="layui-btn layui-btn-sm" name="button">分类列表</button>
+      <div></div>
+    </div>
+    <form class="layui-form">
+
+      <table class="layui-table">
+        <thead>
+          <td>ID</td>
+          <td>分类名称</td>
+          <td>是否禁用</td>
+
+        </thead>
+        <tbody>
+          {volist name="list" id="vo"}
+          <tr>
+            <td>{$vo.id}</td>
+            <td><input type="text" class="layui-input" name="titles[{$vo.id}]" value="{$vo.title}" /></td>
+            <td><input type="checkbox" lay-skin="primary" title="禁用" name="status[{$vo.id}]" {$vo.status == 1 ? "checked" : ''} value="1" ></td>
+          </tr>
+          {/volist}
+          <tr>
+            <td></td>
+            <td><input type="text" class="layui-input" name="titles[0]" value="" /></td>
+            <td><input type="checkbox" lay-skin="primary" title="禁用" name="status[0]" value="1" ></td>
+          </tr>
+        </tbody>
+      </table>
+    </form>
+    <button type="button" class="layui-btn" onclick="save()" name="button">保存</button>
+    <script>
+    layui.use(['layer','form'],function(){
+      $ = layui.jquery;
+      layer = layui.layer;
+      form = layui.form;
+    });
+      function save()
+      {
+        $.post('/public/admin/Banner/typesave',$('form').serialize(),function(res){
+          if(res.status == 0)
+          {
+            layer.alert(res.msg,{icon:2});
+            reloadImg();
+          }else{
+            layer.msg(res.msg);
+            setTimeout(function(){window.location.reload();},1000)
+          }
+        },'json')
+      }
+
+
+    </script>
+
+  </body>
+</html>

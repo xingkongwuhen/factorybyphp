@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>幻灯片添加</title>
+    <link style="text/css" rel="stylesheet" href="__STATIC__/admin/layui/css/layui.css" />
+    <script style="text/javascript" src="__STATIC__/admin/layui/layui.js"></script>
+    <style media="screen">
+      body{padding: 10px}
+    </style>
+  </head>
+  <body>
+    <form class="layui-form">
+      <div class="layui-form-item">
+        <label class="layui-form-label">标题：</label>
+        <div class="layui-input-inline">
+          <input type="text" class="layui-input" name="title" value="">
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">类&nbsp;&nbsp;&nbsp;&nbsp;型：</label>
+        <div class="layui-input-inline">
+          <select class="" name="type">
+            <option value="0">请选择</option>
+            {volist name="typelist" id="vo"}
+            <option value="{$vo.id}">{$vo.title}</option>
+            {/volist}
+          </select>
+        </div>
+        <label class="layui-form-label">&nbsp;</label>
+        <div class="layui-input-inline">
+          <button type="button" onclick="return false;" class="layui-btn layui-btn-sm" id="img_upload">
+            <i class="layui-icon">&#xe67c;</i>上传图片
+          </button>
+          <img src="" id="img" style="height:30px;" />
+          <input type="hidden" name="imgurl" id="imgurl" value="" />
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">链接：</label>
+        <div class="layui-input-block">
+          <input type="text" class="layui-input" name="url" value="">
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">排序：</label>
+        <div class="layui-input-inline">
+          <input type="text" class="layui-input" name="orderid" value="">
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">状&nbsp;&nbsp;&nbsp;&nbsp;态：</label>
+        <div class="layui-input-inline">
+          <input type="checkbox" lay-skin="primary" title="禁止发布" name="status" value="1">
+        </div>
+      </div>
+    </form>
+    <div class="layui-form-item">
+      <div class="layui-input-block">
+      <button class="layui-btn" onclick="save()">提交</button>
+      </div>
+    </div>
+    <script type="text/javascript">
+      layui.use(['layer','form'],function(){
+        form = layui.form;
+        layer = layui.layer;
+        $ = layui.jquery;
+      });
+      function save()
+      {
+        var title = $.trim($('input[name="title"]').val());
+        var imgurl = $.trim($('input[name="imgurl"]').val());
+        if(title == ''){
+          layer.alert("请输入幻灯片标题",{icom:2});
+          return;
+        }
+        if(imgurl == ''){
+          layer.alert("请上传幻灯片缩略图",{icom:2});
+          return;
+        }
+        $.post('/public/admin/Banner/saveadd',$('form').serialize(),function(res){
+
+          if(res.status == 0)
+          {
+            layer.alert(res.msg,{icon:2});
+          }else{
+            layer.msg(res.msg);
+            setTimeout(function(){parent.window.location.reload();},1000)
+          }
+        },'json')
+      }
+
+    </script>
+    <script>
+
+    //上传图片
+        layui.use('upload', function(){
+          var upload = layui.upload;
+
+          //执行实例
+          var uploadInst = upload.render({
+            elem: '#img_upload' //绑定元素
+            ,url: '/public/admin/Upload/img' //上传接口
+            ,accept: 'file'
+            ,done: function(res){
+              if(res.status == 0)
+              {
+                layer.alert(res.msg,{icon:2});
+              }else{
+                $("#img").attr('src',res.msg);
+                $("#imgurl").val(res.msg);
+              }
+            }
+            ,error: function(){
+              //请求异常回调
+            }
+          });
+          upload.render({
+            elem: '#video_upload' //绑定元素
+            ,url: '/public/admin/Upload/video' //上传接口
+            ,accept: 'file'
+            ,done: function(res){
+              if(res.status == 0)
+              {
+                layer.alert(res.msg,{icon:2});
+              }else{
+                $("#video").attr('src',res.msg);
+                $("#videourl").val(res.msg);
+                $("#play").css("display","block");
+              }
+            }
+            ,error: function(){
+              //请求异常回调
+            }
+          });
+        });
+    </script>
+  </body>
+</html>

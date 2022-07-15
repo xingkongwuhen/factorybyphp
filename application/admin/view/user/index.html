@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>管理员列表</title>
+    <link style="text/css" rel="stylesheet" href="__STATIC__/admin/layui/css/layui.css" />
+    <script style="text/javascript" src="__STATIC__/admin/layui/layui.js"></script>
+    <style>
+      body{padding: 10px;}
+      .header .layui-btn-sm{margin-left: 2%;}
+      /* .header span{background-color: #009688; color: #fff; margin-left: 2%; padding: 10px;} */
+      .header div{border-bottom: 2px solid #009688; margin-top: 15px;}
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <button type="button" class="layui-btn layui-btn-sm" name="button">管理员列表</button>
+      <button type="button" class="layui-btn layui-btn-sm" name="button" onclick="add()">添加管理员</button>
+      <button type="button" class="layui-btn layui-btn-sm" name="button" onclick="undel()">撤回删除</button>
+      <div></div>
+    </div>
+    <!-- //管理员列表 -->
+    <table class="layui-table">
+      <thead>
+        <tr>
+          <td>ID</td>
+          <td>用户名</td>
+          <td>角色</td>
+          <td>状态</td>
+          <td>真实姓名</td>
+          <td>添加时间</td>
+          <td>操作</td>
+        </tr>
+      </thead>
+      <tbody>
+        {volist name="list" id="vo"}
+        <tr>
+          <td>{$vo.id}</td>
+          <td>{$vo.name}</td>
+          <td>{:isset($glist[$vo.gid])?$glist[$vo.gid]['typename']:''}</td>
+          <td>{$vo.status==0?'<span style="color:green">正常</span>':'<span style="color:red">禁用</span>'}</td>
+          <td>{$vo.truename}</td>
+          <td>{:date('Y-m-d H:i:s',$vo.createtime)}</td>
+          <td>
+            <button type="button" class="layui-btn layui-btn-xs" name="button" onclick="changestatus({$vo.id})">{$vo.status==0?'停用':'启用'}</button>
+            <button type="button" class="layui-btn layui-btn-normal layui-btn-xs" name="button" onclick="edit({$vo.id})">编辑</button>
+            <button type="button" class="layui-btn layui-btn-xs  layui-btn-danger" name="button" onclick="del({$vo.id})">删除</button>
+          </td>
+        </tr>
+        {/volist}
+      </tbody>
+    </table>
+    <script type="text/javascript">
+    //引入组建
+      layui.use(['layer'],function(){
+        $ = layui.jquery;
+        layer = layui.layer;
+      });
+      // //添加管理员
+      function add()
+      {
+        window.location.href="/public/admin/User/add";
+        // layer.open({
+        //   type: 2,
+        //   title: '添加管理员',
+        //   shade: 0.3,
+        //   area: ['50%','420px'],
+        //   content: '/public/admin.php/admin/User/add' //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+        // });
+      }
+      function undel()
+      {
+        layer.open({
+          type: 2,
+          title: '已删除管理员管理',
+          shade: 0.3,
+          area: ['50%','420px'],
+          content: '/public/admin/User/undel' //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+        });
+      }
+      function edit(id)
+      {
+        window.location.href='/public/admin/User/edit?id='+id;
+        // layer.open({
+        //   type: 2,
+        //   title: '管理员修改',
+        //   shade: 0.3,
+        //   area: ['50%','420px'],
+        //   content: '/public/admin.php/admin/User/edit?id='+id //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+        // });
+      }
+      function changestatus(id)
+      {
+        $.post('/public/admin/User/changestatus?id='+id,function(res){
+          if(res.status == 0)
+          {
+            layer.alert(res.msg,{icon:2});
+            reloadImg();
+          }else{
+            layer.msg(res.msg);
+            setTimeout(function(){window.location.reload();},1000)
+          }
+        },'json')
+      }
+      //删除
+      function del(id)
+      {
+        layer.confirm('确认要删除吗？', function(index){
+          $.post('/public/admin/User/del?id='+id,function(res){
+            if(res.status == 0)
+            {
+              layer.alert(res.msg,{icon:2});
+              reloadImg();
+            }else{
+              layer.msg(res.msg);
+              setTimeout(function(){window.location.reload();},1000)
+            }
+          },'json')
+          layer.close(index);
+        });
+      }
+
+    </script>
+  </body>
+</html>

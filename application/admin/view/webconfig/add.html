@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <link style="text/css" rel="stylesheet" href="__STATIC__/admin/layui/css/layui.css" />
+    <script style="text/javascript" src="__STATIC__/admin/layui/layui.js"></script>
+    <title>系统设置</title>
+    <style>
+      body{padding: 10px;}
+      .header .layui-btn-sm{margin-left: 2%;}
+      .header div{border-bottom: 2px solid #009688; margin-top: 15px;}
+      .layui-form{margin-left: 40%; margin-top: 1%;}
+      .layui-form1{margin-left: 50%; margin-top: 1%;}
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <button type="button" class="layui-btn layui-btn-sm" name="button" onclick="javascript: history.go(-1);">系统设置</button>
+      <button type="button" class="layui-btn layui-btn-sm" name="button" onclick="add()">添加变量</button>
+      <div></div>
+    </div>
+    <form class="layui-form">
+      <div class="layui-form-item">
+        <label class="layui-form-label">变量名称：</label>
+        <div class="layui-input-inline">
+          <input type="text" class="layui-input" name="webname"  value="">
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">变量参数：</label>
+        <div class="layui-input-inline">
+          <input type="text" class="layui-input" name="webcs"  value=""><span>(系统自动加载web $web);</span>
+        </div>
+      </div>
+      <div class="layui-form-item" pane="">
+        <label class="layui-form-label">变量类型：</label>
+        <div class="layui-input-block">
+          <input type="radio" name="webtype" value="0" title="单行文本">
+          <input type="radio" name="webtype" value="1" title="多行文本">
+          <input type="radio" name="webtype" value="2" title="图片">
+        </div>
+      </div>
+    </form>
+    <div class="layui-form-item layui-form1">
+      <button type="button" class="layui-btn" name="button" onclick="save()">保存</button>
+    </div>
+  </body>
+  <script type="text/javascript">
+    layui.use(['layer','form'],function(){
+      form = layui.form;
+      layer = layui.layer;
+      $ = layui.jquery;
+    });
+    function save()
+    {
+      var webname = $.trim($('input[name="webname"]').val());
+      if(webname == ''){
+        layer.alert("请输入网站名称",{icom:2});
+        return;
+      }
+      $.post('/public/admin/Webconfig/blsave',$('form').serialize(),function(res){
+        if(res.status == 0)
+        {
+          layer.alert(res.msg,{icon:2});
+        }else{
+          layer.msg(res.msg);
+          setTimeout(function(){parent.window.location.reload();},1000)
+        }
+      },'json')
+    }
+  </script>
+</html>

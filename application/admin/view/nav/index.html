@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>菜单管理</title>
+    <link style="text/css" rel="stylesheet" href="__STATIC__/admin/layui/css/layui.css" />
+    <script style="text/javascript" src="__STATIC__/admin/layui/layui.js"></script>
+    <style>
+      body{padding: 10px;}
+      .header .layui-btn-sm{margin-left: 2%;}
+      /* .header span{background-color: #009688; color: #fff; margin-left: 2%; padding: 10px;} */
+      .header div{border-bottom: 2px solid #009688; margin-top: 15px;}
+      .layui-btn-primary{float: right;}
+    </style>
+  </head>
+  <body>
+
+    <div class="header">
+      <button type="button" class="layui-btn layui-btn-sm" name="button">管理员列表</button>
+      <!-- <button type="button" class="layui-btn layui-btn-sm" name="button" onclick="add()">添加</button> -->
+      {if condition="$pid>0"}
+      <button type="button" class="layui-btn layui-btn-primary layui-btn-sm" onclick="back({$backid}); return false;" name="button">返回上级</button>
+      {/if}
+      <div></div>
+    </div>
+    <form class="layui-form">
+
+      <table class="layui-table">
+        <thead>
+          <td>ID</td>
+          <td>导航名称</td>
+          <td>英文名称</td>
+          <td>导航图片</td>
+          <td>导航链接</td>
+          <td>排序</td>
+          <td>是否禁用</td>
+          <td>子菜单</td>
+        </thead>
+        <tbody>
+          {volist name="list" id="vo"}
+          <tr>
+            <td>{$vo.id}</td>
+            <td><input type="text" class="layui-input layui-input-inline " name="titles[{$vo.id}]" value="{$vo.title}" /></td>
+            <td><input type="text" class="layui-input layui-input-inline " name="entitles[{$vo.id}]" value="{$vo.entitle}" /></td>
+            <td>  <div class="layui-input-inline">
+              <button type="button" onclick="return false;" class="layui-btn layui-btn-sm" id="img_upload{$vo.id}">
+                <i class="layui-icon">&#xe67c;</i>上传图片
+              </button>
+              <img src="{$vo.imgurl}" id="img{$vo.id}" style="height:30px;" />
+              <input type="hidden" name="imgurls[{$vo.id}]" id="imgurl{$vo.id}" value="{$vo.imgurl}" />
+            </div></td>
+            <td><input type="text" class="layui-input layui-input-inline " name="urls[{$vo.id}]" value="{$vo.url}" /></td>
+            <td><input type="text" class="layui-input layui-input-inline " name="orders[{$vo.id}]" value="{$vo.sort_id}" /></td>
+            <td><input type="checkbox" lay-skin="primary" title="禁用" name="status[{$vo.id}]" {$vo.status == 1?'checked':''} value="1" ></td>
+            <td> <button type="button" class="layui-btn layui-btn-xs"  name="button" onclick="child({$vo.id}); return false;" >子菜单</button>  </td>
+          </tr>
+          <script>
+
+          //上传图片
+              layui.use('upload', function(){
+                var upload = layui.upload;
+
+                //执行实例
+                var uploadInst = upload.render({
+                  elem: '#img_upload{$vo.id}' //绑定元素
+                  ,url: '/public/admin/Upload/img' //上传接口
+                  ,accept: 'file'
+                  ,done: function(res){
+                    if(res.status == 0)
+                    {
+                      layer.alert(res.msg,{icon:2});
+                    }else{
+                      $("#img{$vo.id}").attr('src',res.msg);
+                      $("#imgurl{$vo.id}").val(res.msg);
+                    }
+                  }
+                  ,error: function(){
+                    //请求异常回调
+                  }
+                });
+              });
+          </script>
+          {/volist}
+          <tr>
+            <td></td>
+            <td><input type="text" class="layui-input layui-input-inline " name="titles[0]" value="" /></td>
+            <td><input type="text" class="layui-input layui-input-inline " name="entitles[0]" value="" /></td>
+            <td>  <div class="layui-input-inline">
+              <button type="button" onclick="return false;" class="layui-btn layui-btn-sm" id="img_uploadx">
+                <i class="layui-icon">&#xe67c;</i>上传图片
+              </button>
+              <img src="" id="imgx" style="height:30px;" />
+              <input type="hidden" name="imgurls[0]" id="imgurlx" value="" />
+            </div></td>
+            <td><input type="text" class="layui-input layui-input-inline " name="urls[0]" value="" /></td>
+            <td><input type="text" class="layui-input layui-input-inline " name="orders[0]" value="" /></td>
+            <td><input type="checkbox" lay-skin="primary" title="禁用" name="status[0]" value="1" ></td>
+            <td> </td>
+          </tr>
+        </tbody>
+      </table>
+      <input type="hidden" name="pid" value="{$pid}">
+    </form>
+    <button type="button" class="layui-btn" onclick="save()" name="button">保存</button>
+    <script>
+    layui.use(['layer','form'],function(){
+      $ = layui.jquery;
+      layer = layui.layer;
+      form = layui.form;
+    });
+      function child(pid)
+      {
+        window.location.href="/public/admin/Nav/index?pid="+pid;
+      }
+      function back(pid)
+      {
+        window.location.href="/public/admin/Nav/index?pid="+pid;
+      }
+      function save()
+      {
+        $.post('/public/admin/Nav/save',$('form').serialize(),function(res){
+          if(res.status == 0)
+          {
+            layer.alert(res.msg,{icon:2});
+            reloadImg();
+          }else{
+            layer.msg(res.msg);
+            setTimeout(function(){window.location.reload();},1000)
+          }
+        },'json')
+      }
+
+
+    </script>
+    <script>
+
+    //上传图片
+        layui.use('upload', function(){
+          var upload = layui.upload;
+
+          //执行实例
+          var uploadInst = upload.render({
+            elem: '#img_uploadx' //绑定元素
+            ,url: '/public/admin/Upload/img' //上传接口
+            ,accept: 'file'
+            ,done: function(res){
+              if(res.status == 0)
+              {
+                layer.alert(res.msg,{icon:2});
+              }else{
+                $("#imgx").attr('src',res.msg);
+                $("#imgurlx").val(res.msg);
+              }
+            }
+            ,error: function(){
+              //请求异常回调
+            }
+          });
+          upload.render({
+            elem: '#video_upload[0]' //绑定元素
+            ,url: '/public/admin/Upload/video' //上传接口
+            ,accept: 'file'
+            ,done: function(res){
+              if(res.status == 0)
+              {
+                layer.alert(res.msg,{icon:2});
+              }else{
+                $("#video").attr('src',res.msg);
+                $("#videourl").val(res.msg);
+                $("#play").css("display","block");
+              }
+            }
+            ,error: function(){
+              //请求异常回调
+            }
+          });
+        });
+    </script>
+
+  </body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css">
+</head>
+<body>
+
+<script src="http://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script>
+    var lv1HTML = '<div class="control-group lv1 item-attr">' +
+            '<label class="control-label">规格名称</label>' +
+            '<div class="controls">' +
+            '<input type="text" name="lv1" placeholder="规格名称">' +
+            '<button class="btn btn-primary add_lv2" type="button">添加参数</button>' +
+            '<button class="btn btn-danger remove_lv1" type="button">删除规格</button>' +
+            '</div>' +
+            '<div class="controls lv2s"></div>' +
+            '</div>';
+
+    var lv2HTML = '<div style="margin-top: 5px;">' +
+            '<input type="text" name="lv2" placeholder="参数名称">' +
+            '<button class="btn btn-danger remove_lv2" type="button">删除参数</button>' +
+            '</div>';
+
+    $(document).ready(function() {
+        $('#add_lv1').on('click', function() {
+            var last = $('.control-group.lv1:last');
+            if (!last || last.length == 0) {
+                $(this).parents('.control-group').eq(0).after(lv1HTML);
+            } else {
+                last.after(lv1HTML);
+            }
+        });
+
+        $(document).on('click', '.remove_lv1', function() {
+            $(this).parents('.lv1').remove();
+        });
+
+        $(document).on('click', '.add_lv2', function() {
+            $(this).parents('.lv1').find('.lv2s').append(lv2HTML);
+        });
+
+        $(document).on('click', '.remove_lv2', function() {
+            $(this).parent().remove();
+        });
+        $(document).on('click', '#save_product', function () {
+
+            var obj = {};
+            var i = 0;
+            var first = '';
+            var tmp = {};
+            $('#lv_table input').each(function (index, e) {
+                var name = $(e).attr('name');
+                var value = $(e).val();
+                symbol = name.split('|')[0];
+                key = name.split('|')[1];
+                if (index == 0) {
+                    first = symbol;
+                    tmp = {symbol: symbol, item_id: 1};
+                } else if (first != symbol) {
+                    first = symbol;
+                    i++;
+                    tmp = {symbol: symbol, item_id: 1};
+                }
+                tmp[key] = value;
+                obj[i] = tmp;
+
+            });
+            $.ajax({
+                'url': '/api/test/test/save_sku',
+                'method': 'post',
+                'data': obj,
+                'success': function (e) {
+
+                }
+            });
+            console.log(obj);
+        });
+
+
+        $(document).on('click', '#save_attr', function() {
+            save_attr();
+        });
+        $('#update_table').on('click', function() {
+            save_attr();
+//            update_table();
+        });
+
+        function update_table() {
+            var lv1Arr = $('input[name="lv1"]');
+            if (!lv1Arr || lv1Arr.length == 0) {
+                $('#lv_table_con').hide();
+                $('#lv_table').html('');
+                return;
+            }
+            for (var i = 0; i < lv1Arr.length; i++) {
+                var lv2Arr = $(lv1Arr[i]).parents('.lv1').find('input[name="lv2"]');
+                if (!lv2Arr || lv2Arr.length == 0) {
+                    alert('请先删除无参数的规格项！');
+                    return;
+                }
+            }
+
+            var tableHTML = '';
+            tableHTML += '<table class="table table-bordered">';
+            tableHTML += '    <thead>';
+            tableHTML += '        <tr>';
+            for (var i = 0; i < lv1Arr.length; i++) {
+                tableHTML += '<th width="50">' + $(lv1Arr[i]).val() + '</th>';
+            }
+            tableHTML += '            <th width="20">现价</th>';
+            tableHTML += '            <th width="20">原价</th>';
+            tableHTML += '            <th width="20">库存</th>';
+            tableHTML += '        </tr>';
+            tableHTML += '    </thead>';
+            tableHTML += '    <tbody>';
+
+            var numsArr = new Array();
+            var idxArr = new Array();
+            for (var i = 0; i < lv1Arr.length; i++) {
+                numsArr.push($(lv1Arr[i]).parents('.lv1').find('input[name="lv2"]').length);
+                idxArr[i] = 0;
+            }
+
+            var len = 1;
+            var rowsArr = new Array();
+            for (var i = 0; i < numsArr.length; i++) {
+                len = len * numsArr[i];
+
+                var tmpnum = 1;
+                for (var j = numsArr.length - 1; j > i; j--) {
+                    tmpnum = tmpnum * numsArr[j];
+                }
+                rowsArr.push(tmpnum);
+            }
+            key='test';
+
+            for (var i = 0; i < len; i++) {
+                tableHTML += '        <tr data-row="' + (i+1) + '">';
+
+                var name = '';
+                var value = '';
+                for (var j = 0; j < lv1Arr.length; j++) {
+                    var n = parseInt(i / rowsArr[j]);
+                    if (j == 0) {
+                    } else if (j == lv1Arr.length - 1) {
+                        n = idxArr[j];
+                        if (idxArr[j] + 1 >= numsArr[j]) {
+                            idxArr[j] = 0;
+                        } else {
+                            idxArr[j]++;
+                        }
+                    } else {
+                        var m = parseInt(i / rowsArr[j]);
+                        n = m % numsArr[j];
+                    }
+
+                    var text = $(lv1Arr[j]).parents('.lv1').find('input[name="lv2"]').eq(n).val();
+                    var id = $(lv1Arr[j]).parents('.lv1').find('input[name="lv2"]').eq(n).attr('data-id');
+                    if (j != lv1Arr.length - 1) {
+                        value += id + ',';
+                        name += text + ',';
+                    } else {
+                        name += text;
+                        value += id;
+
+                    }
+
+                    if (i % rowsArr[j] == 0) {
+                        tableHTML += '<td width="50" rowspan="' + rowsArr[j] + '" data-rc="' + (i+1) + ',' + (j+1) + '">' + text + '</td>';
+                    }
+//                    key=$(lv1Arr[j]).val();
+//                    key=$(lv1Arr[j]).attr('data-id');
+                }
+                tableHTML += '<td width="20"><input type="text" name="'+ value + '|price" value="'+ '"/></td>';
+                tableHTML += '<td width="20"><input type="text" name="' + value + '|original_price"  value="'+ '" /></td>';
+                tableHTML += '<td width="20"><input type="text" name="' +  value + '|stock"  value="'+ '" /></td>';
+                tableHTML += '</tr>';
+            }
+            tableHTML += '</tbody>';
+            tableHTML += '</table>';
+
+            $('#lv_table_con').show();
+            $('#lv_table').html(tableHTML);
+
+        }
+        function save_attr() {
+            //生成key
+            var key=[];
+            $('.item-attr input[name=lv1]').each(function (index,ele) {
+                key.push($(ele).val());
+            });
+            //生成值
+            var need=[];
+            for ( j=0;j<key.length;j++){
+                need[j]=[];
+            }
+            i=0;
+            $('.item-attr input').each(function (index,ele) {
+                if($(ele).attr('name')=='lv1' && index!=0){
+                    i++;
+                }else if(index!=0){
+                    need[i].push($(ele).val());
+                }
+            });
+
+
+            $.ajax({
+                'url':'/api/test/test/save_attr',
+                'method':'post',
+                'data':{key:JSON.stringify(key),'value':JSON.stringify(need)},
+                'sync':0,
+                'success':function (e) {
+                    key=e.data.key;
+                    value=e.data.value;
+                    create_attr_id(key,value);
+                }
+            });
+        }
+
+        function create_attr_id(key,value) {
+            console.log(key,value);
+            $('.item-attr input[name=lv1]').each(function (index,ele) {
+              $(ele).attr('data-id',key[index]);
+            });
+            $('.item-attr input[name=lv2]').each(function (index,ele) {
+               $(ele).attr('data-id',value[index]);
+            });
+            update_table();
+            $('#save_product').show();
+        }
+
+
+    });
+</script>
+</body>
+</html>

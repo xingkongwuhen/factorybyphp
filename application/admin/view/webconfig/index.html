@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <link style="text/css" rel="stylesheet" href="__STATIC__/admin/layui/css/layui.css" />
+    <script style="text/javascript" src="__STATIC__/admin/layui/layui.js"></script>
+    <title>系统设置</title>
+    <style>
+      body{padding: 10px;}
+      .header .layui-btn-sm{margin-left: 2%;}
+      /* .header span{background-color: #009688; color: #fff; margin-left: 2%; padding: 10px;} */
+      .header div{border-bottom: 2px solid #009688; margin-top: 15px;}
+      .layui-form{margin-left: 5%; margin-top: 1%;}
+      .layui-form1{margin-left: 5%; margin-top: 1%;}
+
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <button type="button" class="layui-btn layui-btn-sm" name="button">系统设置</button>
+      <button type="button" class="layui-btn layui-btn-sm" name="button" onclick="add()">添加变量</button>
+      <!-- <button type="button" class="layui-btn layui-btn-sm" name="button" onclick="undel()">撤回删除</button> -->
+      <div></div>
+    </div>
+    <form class="layui-form">
+      {volist name="weblist" id="vo"}
+      {if condition="$vo.web_type == 0"}
+      <div class="layui-form-item">
+        <label class="layui-form-label">({$vo.web_cs})</label>
+        <label class="layui-form-label">{$vo.web_name}：</label>
+        <div class="layui-input-inline">
+          <input type="text" class="layui-input" name="webvalue[{$vo.id}]"  value="{$vo.web_value}">
+          <input type="hidden" name="webcs[{$vo.id}]" value="{$vo.web_cs}" />
+        </div>
+
+      </div>
+      {elseif condition="$vo.web_type == 1"}
+      <div class="layui-form-item">
+        <label class="layui-form-label">({$vo.web_cs})</label>
+        <label class="layui-form-label">{$vo.web_name}：</label>
+        <div class="layui-input-inline">
+          <textarea name="webvalue[{$vo.id}]" rows="8" cols="80">{$vo.web_value}</textarea>
+          <input type="hidden" name="webcs[{$vo.id}]" value="{$vo.web_cs}" />
+          <!-- <input type="text" class="layui-input" name="webname"  value="{$vo.web_value}"> -->
+        </div>
+      </div>
+      {elseif condition="$vo.web_type == 2"}
+      <div class="layui-form-item">
+        <label class="layui-form-label">({$vo.web_cs})</label>
+        <label class="layui-form-label">{$vo.web_name}：</label>
+        <div class="layui-input-inline">
+          <button type="button" onclick="return false;" class="layui-btn layui-btn-sm" id="img_upload">
+            <i class="layui-icon">&#xe67c;</i>上传图片
+          </button>
+          <img src="{$vo.web_value}" id="img" style="height:30px;" />
+          <input type="hidden" name="webvalue[{$vo.id}]" id="imgurl" value="{$vo.web_value}" />
+          <input type="hidden" name="webcs[{$vo.id}]" value="{$vo.web_cs}" />
+        </div>
+      </div>
+      {/if}
+      {/volist}
+    </form>
+    <div class="layui-form-item layui-form1">
+      <button type="button" class="layui-btn" name="button" onclick="save()">保存</button>
+    </div>
+  </body>
+  <script type="text/javascript">
+    layui.use(['layer','form'],function(){
+      form = layui.form;
+      layer = layui.layer;
+      $ = layui.jquery;
+    });
+    function add()
+    {
+      window.location.href = "/public/admin/Webconfig/add";
+    }
+    function save()
+    {
+      $.post('/public/admin/Webconfig/save',$('form').serialize(),function(res){
+        if(res.status == 0)
+        {
+          layer.alert(res.msg,{icon:2});
+        }else{
+          layer.msg(res.msg);
+          setTimeout(function(){window.location.reload();},1000)
+        }
+      },'json')
+    }
+
+  </script>
+  <script>
+
+  //上传图片
+      layui.use('upload', function(){
+        var upload = layui.upload;
+
+        //执行实例
+        var uploadInst = upload.render({
+          elem: '#img_upload' //绑定元素
+          ,url: '/public/admin/Upload/img' //上传接口
+          ,done: function(res){
+            if(res.status == 0)
+            {
+              layer.alert(res.msg,{icon:2});
+            }else{
+              $("#img").attr('src',res.msg);
+              $("#imgurl").val(res.msg);
+            }
+          }
+          ,error: function(){
+            //请求异常回调
+          }
+        });
+        upload.render({
+          elem: '#video_upload' //绑定元素
+          ,url: '/public/admin/Upload/video' //上传接口
+          ,accept: 'file'
+          ,before: function(obj) {
+              layer.msg('视频上传中...', {
+                     icon: 16,
+                     shade: 0.01,
+                     time: 0
+                 })
+          }
+          ,done: function(res){
+            layer.close(layer.msg());//关闭上传提示窗口
+            if(res.status == 0)
+            {
+              layer.alert(res.msg,{icon:2});
+            }else{
+              $("#video").attr('src',res.msg);
+              $("#videourl").val(res.msg);
+              $("#play").css("display","block");
+            }
+          }
+          ,error: function(){
+            //请求异常回调
+          }
+        });
+      });
+  </script>
+</html>

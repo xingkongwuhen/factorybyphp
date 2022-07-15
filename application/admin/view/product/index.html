@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>图文列表</title>
+    <link style="text/css" rel="stylesheet" href="__STATIC__/admin/layui/css/layui.css" />
+    <script style="text/javascript" src="__STATIC__/admin/layui/layui.js"></script>
+    <style>
+      body{padding: 10px;}
+      .header .layui-btn-sm{margin-left: 2%;}
+      /* .header span{background-color: #009688; color: #fff; margin-left: 2%; padding: 10px;} */
+      .header .fenge{border-bottom: 2px solid #009688; margin-top: 15px;}
+      .header .seach{float: right; margin-right: 5%}
+      #pages {margin-left: 40%}
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <button type="button" class="layui-btn layui-btn-sm" name="button">图文列表</button>
+      <button type="button" class="layui-btn layui-btn-sm" name="button" onclick="add({$mid})">添加图文</button>
+      <button type="button" class="layui-btn layui-btn-sm" name="button" onclick="undel({$mid})">撤回删除</button>
+      <div class="layui-form-item seach">
+        <div class="layui-input-inline">
+        <input type="text" name="key" id="key" class="layui-input" value="{$key}">
+        </div>
+        <button type="button" onclick="seach()" class="layui-btn layui-btn-primary" name="button">搜索</button>
+      </div>
+      <div class="fenge"></div>
+      <div class="fenge"></div>
+    </div>
+    <!-- //幻灯片列表 -->
+    <table class="layui-table">
+      <thead>
+        <tr>
+          <td>ID</td>
+          <td>标题</td>
+          <td>图片</td>
+          <td>类型</td>
+          <td>关键词</td>
+          <td>排序</td>
+          <td>状态</td>
+          <td>添加时间</td>
+          <td>操作</td>
+        </tr>
+      </thead>
+      <tbody>
+        {volist name="list.lists" id="vo"}
+        <tr>
+          <td>{$vo.id}</td>
+          <td>{$vo.title}</td>
+          <td><img src="{$vo.imgurl}" style="height:50px" /> </td>
+          <td>{$vo.type}</td>
+          <td>{$vo.keywords}</td>
+          <td>{$vo.orderid}</td>
+          <td>{$vo.status==0?'<span style="color:green">启用</span>':'<span style="color:red">停用</span>'}</td>
+          <td>{:date('Y-m-d H:i:s',$vo.createtime)}</td>
+          <td>
+            <button type="button" class="layui-btn layui-btn-xs" name="button" onclick="changestatus({$vo.id})">{$vo.status==0?'停用':'启用'}</button>
+            <button type="button" class="layui-btn layui-btn-xs" name="button" onclick="changetj({$vo.id})">{$vo.tj==0?'推荐':'取消推荐'}</button>
+            <button type="button" class="layui-btn layui-btn-xs layui-btn-normal" name="button" onclick="edit({$vo.id},{$mid})">编辑</button>
+            <button type="button" class="layui-btn layui-btn-xs layui-btn-danger" name="button" onclick="del({$vo.id})">删除</button>
+          </td>
+        </tr>
+        {/volist}
+      </tbody>
+    </table>
+    <div id="pages"></div>
+    <script>
+        layui.use('laypage', function(){
+          var laypage = layui.laypage;
+
+          //执行一个laypage实例
+          laypage.render({
+            elem: 'pages' //注意，这里的 test1 是 ID，不用加 # 号
+            ,count: {$list.total} //数据总数，从服务端得到
+            ,limit: {$pagesize}
+            ,curr: {$page}
+            ,jump: function(obj, first){
+              //obj包含了当前分页的所有参数，比如：
+              console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+              console.log(obj.limit); //得到每页显示的条数
+
+              //首次不执行
+              if(!first){
+                console.log(obj.curr);
+                seach(obj.curr)
+                // window.location.href="?page="+obj.curr;
+              }
+            }
+          });
+        });
+    </script>
+    <script type="text/javascript">
+    //引入组建
+      layui.use(['layer','laypage'],function(){
+        $ = layui.jquery;
+        layer = layui.layer;
+        laypage = layui.laypage;
+      });
+      // //添加管理员
+      function add(mid)
+      {
+        window.location.href = "/public/admin/Product/add?mid="+mid;
+        // layer.open({
+        //   type: 2,
+        //   title: '添加影片',
+        //   shade: 0.3,
+        //   area: ['80%','620px'],
+        //   content: '/public/admin.php/admin/Product/add' //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+        // });
+      }
+      function undel(mid)
+      {
+        layer.open({
+          type: 2,
+          title: '已删除管理员管理',
+          shade: 0.3,
+          area: ['50%','420px'],
+          content: '/public/admin/Product/undel?mid='+mid //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+        });
+      }
+      function edit(id,mid)
+      {
+        window.location.href = "/public/admin/Product/edit?id="+id+"&mid="+mid;
+        // layer.open({
+        //   type: 2,
+        //   title: '影片修改',
+        //   shade: 0.3,
+        //   area: ['80%','620px'],
+        //   content: '/public/admin.php/admin/Product/edit?id='+id //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+        // });
+      }
+      function changestatus(id)
+      {
+        $.post('/public/admin/Product/changestatus?id='+id,function(res){
+          if(res.status == 0)
+          {
+            layer.alert(res.msg,{icon:2});
+          }else{
+            layer.msg(res.msg);
+            setTimeout(function(){window.location.reload();},1000)
+          }
+        },'json')
+      }
+      function changetj(id)
+      {
+        $.post('/public/admin/Product/changetj?id='+id,function(res){
+          if(res.status == 0)
+          {
+            layer.alert(res.msg,{icon:2});
+          }else{
+            layer.msg(res.msg);
+            setTimeout(function(){window.location.reload();},1000)
+          }
+        },'json')
+      }
+      //删除
+      function del(id)
+      {
+        layer.confirm('确认要删除吗？', function(index){
+          $.post('/public/admin/Product/del?id='+id,function(res){
+            if(res.status == 0)
+            {
+              layer.alert(res.msg,{icon:2});
+              reloadImg();
+            }else{
+              layer.msg(res.msg);
+              setTimeout(function(){window.location.reload();},1000)
+            }
+          },'json')
+          layer.close(index);
+        });
+      }
+      function seach(currpage)
+      {
+        // alert(currpage);
+        var  key = $.trim($("#key").val());
+
+        var url = '/public/admin/Product/index?mid='+{$mid}+'&page='+currpage;
+        if(key != '')
+        {
+          url += '&key='+key;
+        }
+        window.location.href= url;
+
+      }
+
+    </script>
+  </body>
+</html>

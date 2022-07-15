@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Document</title>
+    <script type="text/javascript" src="__STATIC__/admin/js/echarts.js">
+
+    </script>
+  </head>
+  <body>
+    <div style="text-align:center; color:#988844; font-size:28px;">
+      <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+      <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+       <div id="main" style="width: 100%;height:500px;"></div>
+       <script type="text/javascript" src="__STATIC__/admin/js/ec.js"></script>
+       <div class="layui-form-item">
+         <label class="layui-form-label">服务器系统</label>
+         <div class="layui-input-block">
+          <label>{$info.OS}</label>
+         </div>
+       </div>
+       <div class="layui-form-item">
+         <label class="layui-form-label">服务器系统</label>
+         <div class="layui-input-block"> {$info.PATH}</div>
+       </div>
+       <div class="layui-form-item">
+         <label class="layui-form-label">服务器系统</label>
+         <div class="layui-input-block"> {$info.PHP_TYPE}</div>
+       </div>
+       <div class="layui-form-item">
+         <label class="layui-form-label">服务器系统</label>
+         <div class="layui-input-block"> {$info.TP}</div>
+       </div>
+       <div class="layui-form-item">
+         <label class="layui-form-label">服务器系统</label>
+         <div class="layui-input-block"> {$info.MAX_UPLOAD}</div>
+       </div>
+    </div>
+  </body>
+</html>

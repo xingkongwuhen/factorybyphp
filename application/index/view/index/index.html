@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>视频网站</title>
+    <link style="text/css" rel="stylesheet" href="__STATIC__/admin/layui/css/layui.css" />
+    <script style="text/javascript" src="__STATIC__/admin/layui/layui.js"></script>
+    <style>
+      .header{width: 100%;height: 50px;line-height: 50px; background-color: #1E9FFF; color: #fff;}
+      .title{margin-left: 3%; width: 25%float: left; font-size: 35px;}
+      .nav{float: right; margin-right: 2%;width: 70%}
+      .layui-nav{height: 50px; line-height: 50px; color: #fff;}
+      .userinfo{float: right;margin-right: 5%; font-size: 20px;}
+      .userinfo a{color: #fff;}
+      .menu{width: 15%; float: left; background-color: #333744;}
+      .layui-nav-tree{width: 100%}
+      .layui-colla-content{padding: 0px; border-top: none;}
+      .layui-colla-title{background: #42485b; color: #fff;}
+      .layui-colla-item{border-top: none;}
+      .layui-collapse{border:none;}
+      .layui-form-item{width: 90%;text-align: center;margin: auto; clear: both;}
+      .layui-ul-item{width:100%; float: left; margin-top: 15px; text-align: center;}
+      .layui-ul-item li{width: 70%; float: left; text-align: center; margin-left: 5px;}
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <span class="title">视频网站</span>
+      <div class="nav">
+      <ul class="layui-nav layui-bg-blue" lay-filter="">
+        {volist name="nav" id="vo"}
+
+        <li class="layui-nav-item">
+          <a href="{$vo.url}">{$vo.title}</a>
+          {if condition="$vo.children neq 0"}
+          <dl class="layui-nav-child"> <!-- 二级菜单 -->
+            {volist name="vo.children" id="voc"}
+            <dd><a href="{$voc.url}">{$voc.title}</a></dd>
+            {/volist}
+          </dl>
+          {/if}
+        </li>
+
+        {/volist}
+      </ul>
+      </div>
+    </div>
+    <div class="layui-carousel" id="test1">
+      <div carousel-item>
+        {volist name="banner" id="vo"}
+        <div><a href="{$vo.url}" target="_blank"><img src="{$vo.imgurl}" alt="{$vo.title}" /></a></div>
+        {/volist}
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <ul class="layui-ul-item">
+        {volist name="vlist" id="vo"}
+        <li><video src="{$vo.videourl}" id="video" style="width:100%; height:600px;" controls="controls"></video></li>
+        {/volist}
+      </ul>
+    </div>
+
+
+    <script>
+    //注意：导航 依赖 element 模块，否则无法进行功能性操作
+    layui.use('element', function(){
+      var element = layui.element;
+
+      //…
+    });
+    layui.use('carousel', function(){
+      var carousel = layui.carousel;
+      //建造实例
+      carousel.render({
+        elem: '#test1'
+        ,width: '100%' //设置容器宽度
+        ,arrow: 'always' //始终显示箭头
+        //,anim: 'updown' //切换动画方式
+      });
+    });
+    </script>
+  </body>
+</html>
