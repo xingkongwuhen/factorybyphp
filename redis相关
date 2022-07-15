@@ -1,0 +1,23 @@
+1、数据结构  数组 hashtable  单双链表  队列  跳表（实现redis常用命令基于go 手撕）  lru（面试必问 手撕put和get） 树
+2、算法leetcode hot 100  （刷完数据结构专题刷相关数据结构的算法实现 然后hot 100 手撕）
+3、redis （好未来redis5源码设计与实现） 基于go实现redis常问的数据结构 跳表 hash等（没难度） 参考https://www.cnblogs.com/Finley/category/1598973.html
+4、redis实现限流的集中方案（手撕）
+5、redis实现分布式锁（业务未未执行 锁过期怎么续锁）
+6、redis慢查询定位  redis6.0多线程
+7、redis的内存淘汰策略
+8、redis集群mget等批量命令的执行
+9、陌陌redis集群代理层proxy的实现和架构
+10、mysql基础（参考掘金小册《从根上理解mysql》看完吊打各种面试官）
+12、mysql分库分表（hash  基因法  取模等，最好有工业级实现场景并说明优缺点）
+13、mysql的主从复制
+14、mysql慢查询的优化（掘金小册看完 吊打面试官）
+15、消息队列  kafka （自己看吧 我没细看东西太多）
+17、多路复用（epoll和select的基本实现  epoll的时间复杂度（红黑树的时间复杂度））
+18、php-fpm进程管理器（比如给你一台服务器 静态模式下需要启动多少worker进程  需要知道一个进程正常是20到30M内存）
+19、nginx模型（怎么基于nginx+lua实现接口的放量策略）
+20、网络通信协议（主要理解tcp  比如滑动窗口 三次握手 四次挥手等 超时重试等）
+21、语言层面（基本不问）
+22、项目及技术优化  https://note.youdao.com/s/I4ZQAhzE    https://note.youdao.com/s/42MymjX4    https://note.youdao.com/s/c5EUN1CW   https://note.youdao.com/s/HpsITRDW
+23、陌陌整体微服务架构及各种中间件的实现（注册中心  寻址  异构语言调用  service-mesh  负载均衡  监控等等）
+24、场景题（越垃圾的公司问的越恶心，大厂基本都扣细节，小公司直接让你设计一个im系统 设计一个直播系统 读扩散 写扩散的实现等等）
+25、大厂面试题刷一遍  https://osjobs.net/topk/%E8%85%BE%E8%AE%AF/
