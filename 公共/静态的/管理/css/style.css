@@ -1,0 +1,23 @@
+/* 商品页 */
+body{padding: 10px}
+.header .layui-btn-sm{margin-left: 2%;}
+.layui-form {margin: auto; width: 95%;}
+.layui-from-btn {margin: auto; width: 95%;}
+/* .header span{background-color: #009688; color: #fff; margin-left: 2%; padding: 10px;} */
+.header div{border-bottom: 2px solid #009688; margin-top: 15px; margin-bottom: 15px;}
+.layui-upload-img { width: 90px; height: 90px; margin: 0; }
+.pic-more { width:100%; left; margin: 10px 0px 0px 0px;}
+.pic-more li { width:90px; float: left; margin-right: 5px;}
+.pic-more li .layui-input { display: initial; }
+.pic-more li a { position: absolute; top: 0; display: block; }
+.pic-more li a i { font-size: 24px; background-color: #008800; }
+#slide-pc-priview .item_img img{ width: 90px; height: 90px;}
+#slide-pc-priview li{position: relative;}
+#slide-pc-priview li .operate{ color: #000; display: none;}
+#slide-pc-priview li .toleft{ position: absolute;top: 40px; left: 1px; cursor:pointer;}
+#slide-pc-priview li .toright{ position: absolute;top: 40px; right: 1px;cursor:pointer;}
+#slide-pc-priview li .close{position: absolute;top: 5px; right: 5px;cursor:pointer;}
+#slide-pc-priview li:hover .operate{ display: block;}
+.setting .layui-input-inline{width: 100px;}
+.price .layui-input-inline{width: 100px;}
+/* 商品页结束 */
